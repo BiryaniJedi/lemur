@@ -1,7 +1,7 @@
 package lexer
 
 import (
-	"monkey/token"
+	"lemur/token"
 )
 
 type Lexer struct {
@@ -38,12 +38,18 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.PLUS, l.ch)
 	case '-':
 		tok = newToken(token.MINUS, l.ch)
+	case '*':
+		tok = newToken(token.ASTERISK, l.ch)
+	case '/':
+		tok = newToken(token.FSLASH, l.ch)
 	case '{':
 		tok = newToken(token.LBRACE, l.ch)
 	case '}':
 		tok = newToken(token.RBRACE, l.ch)
 	case '=':
 		tok = newToken(token.EQ, l.ch)
+	case '!':
+		tok = l.bangSwitch()
 	case '>':
 		tok = l.greaterThanSwitch()
 	case 0:
@@ -118,6 +124,19 @@ func (l *Lexer) greaterThanSwitch() token.Token {
 		return newTokenStr(token.GE, ">=")
 	default:
 		return newToken(token.GT, l.ch)
+	}
+}
+
+func (l *Lexer) bangSwitch() token.Token {
+	nextChar := l.peekChar()
+	switch nextChar {
+	case 0:
+		return newToken(token.ILLEGAL, l.ch)
+	case '=':
+		l.nextChar()
+		return newTokenStr(token.NEQ, "!=")
+	default:
+		return newToken(token.BANG, l.ch)
 	}
 }
 
