@@ -28,6 +28,8 @@ const (
 	BANG     = "!"
 	ASTERISK = "*"
 	FSLASH   = "/"
+	AND      = "&&"
+	OR       = "||"
 
 	// Comparison??
 	EQ  = "="

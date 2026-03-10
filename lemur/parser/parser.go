@@ -28,6 +28,8 @@ type (
 const (
 	_ int = iota
 	LOWEST
+	OR         // ||
+	AND        // &&
 	EQUALS     // ==
 	BINARYCOMP // > or < or >= or <=
 	SUM        // +
@@ -37,6 +39,8 @@ const (
 )
 
 var precedences = map[token.TokenType]int{
+	token.OR:       OR,
+	token.AND:      AND,
 	token.EQ:       EQUALS,
 	token.NEQ:      EQUALS,
 	token.LT:       BINARYCOMP,
@@ -85,6 +89,8 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.LE, p.parseInfixExpression)
 	p.registerInfix(token.GE, p.parseInfixExpression)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
+	p.registerInfix(token.OR, p.parseInfixExpression)
+	p.registerInfix(token.AND, p.parseInfixExpression)
 	return p
 }
 

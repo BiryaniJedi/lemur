@@ -16,6 +16,8 @@ func TestNextToken_Basic(t *testing.T) {
 	};
 
 	let result <- add(five, ten);
+	&&;
+	||;
 	`
 
 	tests := []struct {
@@ -57,6 +59,10 @@ func TestNextToken_Basic(t *testing.T) {
 		{token.COMMA, ","},
 		{token.IDENT, "ten"},
 		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
+		{token.AND, "&&"},
+		{token.SEMICOLON, ";"},
+		{token.OR, "||"},
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
