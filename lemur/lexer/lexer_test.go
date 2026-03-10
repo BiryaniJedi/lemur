@@ -122,6 +122,47 @@ func TestNextToken_Minimal(t *testing.T) {
 	}
 }
 
+func TestNextToken_Function(t *testing.T) {
+	input := `fn(x, y) => {x + y};`
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.FUNCTION, "fn"},
+		{token.LPAREN, "("},
+		{token.IDENT, "x"},
+		{token.COMMA, ","},
+		{token.IDENT, "y"},
+		{token.RPAREN, ")"},
+		{token.ARROW, "=>"},
+		{token.LBRACE, "{"},
+		{token.IDENT, "x"},
+		{token.PLUS, "+"},
+		{token.IDENT, "y"},
+		{token.RBRACE, "}"},
+		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
+	}
+
+	l := New(input)
+
+	for i, tt := range tests {
+		tok := l.NextToken()
+		tok.PrintToken()
+
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong. expected=%q, got=%q",
+				i, tt.expectedType, tok.Type)
+		}
+
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - literal wrong. expected=%q, got=%q",
+				i, tt.expectedLiteral, tok.Literal)
+		}
+	}
+}
+
 func TestNextTokenComprehensive(t *testing.T) {
 	input := `let five <- 5;
 let ten <- 10;
@@ -142,6 +183,7 @@ if (5 < 10) {
 
 10 = 10;
 10 != 9;
+10 => 9;
 `
 
 	tests := []struct {
@@ -219,6 +261,10 @@ if (5 < 10) {
 		{token.SEMICOLON, ";"},
 		{token.INT, "10"},
 		{token.NEQ, "!="},
+		{token.INT, "9"},
+		{token.SEMICOLON, ";"},
+		{token.INT, "10"},
+		{token.ARROW, "=>"},
 		{token.INT, "9"},
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},

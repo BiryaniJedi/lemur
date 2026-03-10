@@ -54,6 +54,7 @@ const (
 	ELSE     = "else"
 	TRUE     = "true"
 	FALSE    = "false"
+	ARROW    = "=>"
 )
 
 var keywords = map[string]TokenType{
@@ -64,6 +65,7 @@ var keywords = map[string]TokenType{
 	"else":   ELSE,
 	"true":   TRUE,
 	"false":  FALSE,
+	"=>":     ARROW,
 }
 
 func isKeyword(ident string) bool {

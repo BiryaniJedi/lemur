@@ -47,7 +47,7 @@ func (l *Lexer) NextToken() token.Token {
 	case '}':
 		tok = newToken(token.RBRACE, l.ch)
 	case '=':
-		tok = newToken(token.EQ, l.ch)
+		tok = l.equalsSwitch()
 	case '!':
 		tok = l.bangSwitch()
 	case '>':
@@ -98,6 +98,13 @@ func (l *Lexer) peekChar() byte {
 	return l.input[l.nextPosition]
 }
 
+func (l *Lexer) prevChar() byte {
+	if l.prevPosition < 0 {
+		return 0
+	}
+	return l.input[l.prevPosition]
+}
+
 func (l *Lexer) lessThanSwitch() token.Token {
 	nextChar := l.peekChar()
 	switch nextChar {
@@ -137,6 +144,19 @@ func (l *Lexer) bangSwitch() token.Token {
 		return newTokenStr(token.NEQ, "!=")
 	default:
 		return newToken(token.BANG, l.ch)
+	}
+}
+
+func (l *Lexer) equalsSwitch() token.Token {
+	nextChar := l.peekChar()
+	switch nextChar {
+	case 0:
+		return newToken(token.ILLEGAL, l.ch)
+	case '>':
+		l.nextChar()
+		return newTokenStr(token.ARROW, "=>")
+	default:
+		return newToken(token.EQ, l.ch)
 	}
 }
 
