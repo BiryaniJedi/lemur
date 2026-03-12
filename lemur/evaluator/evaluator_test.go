@@ -1,7 +1,7 @@
 package evaluator
 
 import (
-	// "fmt"
+	"fmt"
 	"lemur/lexer"
 	"lemur/object"
 	"lemur/parser"
@@ -95,13 +95,19 @@ func TestBangOperator(t *testing.T) {
 	}
 }
 
-func testEval(input string) object.Object {
+func testEval(input string, verbose ...bool) object.Object {
 	l := lexer.New(input)
 	p := parser.New(l)
+	env := object.NewEnvironment()
 	program := p.ParseProgram()
-	// fmt.Printf("Program: %s\n", program.String())
+	fmt.Printf("Len verbose arr: %d\n", len(verbose))
+	if len(verbose) >= 1 {
+		if verbose[0] {
+			fmt.Printf("Program: %s\n", program.String())
+		}
+	}
 
-	return Eval(program)
+	return Eval(program, env)
 }
 
 func TestIfElseExpressions(t *testing.T) {
@@ -237,6 +243,10 @@ if (10 > 1) {
 `,
 			"unknown operator: BOOLEAN + BOOLEAN",
 		},
+		{
+			"foobar",
+			"identifier not found: foobar",
+		},
 	}
 
 	for _, tt := range tests {
@@ -253,5 +263,21 @@ if (10 > 1) {
 			t.Errorf("wrong error message. expected=%q, got=%q",
 				tt.expectedMessage, errObj.Message)
 		}
+	}
+}
+
+func TestLetStatements(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"let a <- 5; a;", 5},
+		{"let a <- 5 * 5; a;", 25},
+		{"let a <- 5; let b <- a; b;", 5},
+		{"let a <- 5; let b <- a; let c <- a + b + 5; c;", 15},
+	}
+
+	for _, tt := range tests {
+		testIntegerObject(t, testEval(tt.input, true), tt.expected)
 	}
 }

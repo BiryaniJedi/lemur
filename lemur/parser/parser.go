@@ -8,23 +8,6 @@ import (
 	"strconv"
 )
 
-type Parser struct {
-	l *lexer.Lexer
-
-	errors []string
-
-	curToken  token.Token
-	peekToken token.Token
-
-	prefixParseFns map[token.TokenType]prefixParseFn
-	infixParseFns  map[token.TokenType]infixParseFn
-}
-
-type (
-	prefixParseFn func() ast.Expression
-	infixParseFn  func(ast.Expression) ast.Expression
-)
-
 const (
 	_ int = iota
 	LOWEST
@@ -53,6 +36,23 @@ var precedences = map[token.TokenType]int{
 	token.ASTERISK: PRODUCT,
 	token.LPAREN:   CALL,
 }
+
+type Parser struct {
+	l *lexer.Lexer
+
+	errors []string
+
+	curToken  token.Token
+	peekToken token.Token
+
+	prefixParseFns map[token.TokenType]prefixParseFn
+	infixParseFns  map[token.TokenType]infixParseFn
+}
+
+type (
+	prefixParseFn func() ast.Expression
+	infixParseFn  func(ast.Expression) ast.Expression
+)
 
 func New(l *lexer.Lexer) *Parser {
 	p := &Parser{
