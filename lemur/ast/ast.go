@@ -125,38 +125,10 @@ func (es *ExpressionStatement) String() string {
 	return ""
 }
 
-type IntegerLiteral struct {
-	// token.INT
-	Token token.Token
-	Value int64
-}
-
-func (il *IntegerLiteral) expressionNode() {}
-func (il *IntegerLiteral) TokenLiteral() string {
-	return il.Token.Literal
-}
-func (il *IntegerLiteral) String() string {
-	return il.Token.Literal
-}
-
 type PrefixExpression struct {
 	Token    token.Token
 	Operator string
 	Right    Expression
-}
-
-type Boolean struct {
-	// token.TRUE or token.False
-	Token token.Token
-	Value bool
-}
-
-func (b *Boolean) expressionNode() {}
-func (b *Boolean) TokenLiteral() string {
-	return b.Token.Literal
-}
-func (b *Boolean) String() string {
-	return b.Token.Literal
 }
 
 func (pe *PrefixExpression) expressionNode()      {}
@@ -285,4 +257,47 @@ func (ce *CallExpression) String() string {
 	out.WriteString(")")
 
 	return out.String()
+}
+
+// Literals
+type IntegerLiteral struct {
+	// token.INT
+	Token token.Token
+	Value int64
+}
+
+func (il *IntegerLiteral) expressionNode() {}
+func (il *IntegerLiteral) TokenLiteral() string {
+	return il.Token.Literal
+}
+func (il *IntegerLiteral) String() string {
+	return il.Token.Literal
+}
+
+type Boolean struct {
+	// token.TRUE or token.False
+	Token token.Token
+	Value bool
+}
+
+func (b *Boolean) expressionNode() {}
+func (b *Boolean) TokenLiteral() string {
+	return b.Token.Literal
+}
+func (b *Boolean) String() string {
+	return b.Token.Literal
+}
+
+type StringLiteral struct {
+	// token.STRING
+	Token token.Token
+	Value string
+}
+
+func (sl *StringLiteral) expressionNode() {}
+func (sl *StringLiteral) TokenLiteral() string {
+	return sl.Token.Literal
+}
+func (sl *StringLiteral) String() string {
+	return sl.Token.Literal
 }

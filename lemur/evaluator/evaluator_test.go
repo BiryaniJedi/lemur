@@ -32,7 +32,24 @@ func TestEvalIntegerExpression(t *testing.T) {
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		testIntegerObject(t, evaluated, tt.expected)
+		testLiteralObject(t, evaluated, tt.expected)
+	}
+}
+
+func TestEvalStringExpression(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{`"5"`, "5"},
+		{`"this string"`, "this string"},
+		{`"6" + "7"`, "67"},
+		{`"6" + "7"`, "67"},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		testStringObject(t, evaluated, tt.expected)
 	}
 }
 
@@ -68,6 +85,10 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"(1 < 2) = false", false},
 		{"(1 > 2) = true", false},
 		{"(1 > 2) = false", true},
+		{`("1" > "2") = false`, true},
+		{`("1" = "1") = false`, false},
+		{`"1" < "1"`, false},
+		{`"1" = "1"`, true},
 	}
 
 	for _, tt := range tests {
@@ -134,6 +155,18 @@ func TestIfElseExpressions(t *testing.T) {
 	}
 }
 
+func testLiteralObject(t *testing.T, obj object.Object, expected any) bool {
+	switch obj.Type() {
+	case object.INTEGER_OBJ:
+		return testIntegerObject(t, obj, expected.(int64))
+	case object.BOOLEAN_OBJ:
+		return testBooleanObject(t, obj, expected.(bool))
+	case object.STR_OBJ:
+		return testStringObject(t, obj, expected.(string))
+	}
+	return false
+}
+
 func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	result, ok := obj.(*object.Integer)
 	if !ok {
@@ -142,6 +175,21 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	}
 	if result.Value != expected {
 		t.Errorf("object has wrong value. got=%d, want=%d",
+			result.Value, expected)
+		return false
+	}
+
+	return true
+}
+
+func testStringObject(t *testing.T, obj object.Object, expected string) bool {
+	result, ok := obj.(*object.String)
+	if !ok {
+		t.Errorf("object is not String. got=%T (%+v)", obj, obj)
+		return false
+	}
+	if result.Value != expected {
+		t.Errorf("object has wrong value. got=%s, want=%s",
 			result.Value, expected)
 		return false
 	}
@@ -175,7 +223,7 @@ func testNullObject(t *testing.T, obj object.Object) bool {
 func TestReturnStatements(t *testing.T) {
 	tests := []struct {
 		input    string
-		expected int64
+		expected any
 	}{
 		{"return 10;", 10},
 		{"return 10; 9;", 10},
@@ -193,11 +241,12 @@ func TestReturnStatements(t *testing.T) {
 		`,
 			10,
 		},
+		{`return "Hello, World!"`, "Hello, World!"},
 	}
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		testIntegerObject(t, evaluated, tt.expected)
+		testLiteralObject(t, evaluated, tt.expected)
 	}
 }
 

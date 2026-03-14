@@ -190,6 +190,8 @@ if (5 < 10) {
 10 = 10;
 10 != 9;
 10 => 9;
+"foobar";
+"foo bar";
 `
 
 	tests := []struct {
@@ -273,6 +275,10 @@ if (5 < 10) {
 		{token.ARROW, "=>"},
 		{token.INT, "9"},
 		{token.SEMICOLON, ";"},
+		{token.STRING, "foobar"},
+		{token.SEMICOLON, ";"},
+		{token.STRING, "foo bar"},
+		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
 
@@ -280,7 +286,6 @@ if (5 < 10) {
 
 	for i, tt := range tests {
 		tok := l.NextToken()
-		tok.PrintToken()
 
 		if tok.Type != tt.expectedType {
 			t.Fatalf("tests[%d] - tokentype wrong. expected=%q, got=%q",

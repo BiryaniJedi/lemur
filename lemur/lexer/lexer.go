@@ -66,6 +66,8 @@ func (l *Lexer) NextToken() token.Token {
 		} else {
 			tok = newToken(token.ILLEGAL, l.ch)
 		}
+	case '"':
+		tok = l.getStringToken()
 	case 0:
 		tok.Type = token.EOF
 	default:
@@ -178,6 +180,20 @@ func (l *Lexer) skipWhitespace() {
 	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
 		l.nextChar()
 	}
+}
+
+func (l *Lexer) getStringToken() token.Token {
+	// current state '"' character
+	position := l.position + 1
+	l.nextChar()
+	for l.ch != '"' {
+		l.nextChar()
+		if l.ch == 0 {
+			return newToken(token.ILLEGAL, l.ch)
+		}
+	}
+	tok := newTokenStr(token.STRING, l.input[position:l.position])
+	return tok
 }
 
 func (l *Lexer) readIdentifier(charTypeChecker func(c byte) bool) string {
